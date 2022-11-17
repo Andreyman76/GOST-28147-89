@@ -461,6 +461,7 @@ int main()
 {
 	system("chcp 1251");
 	system("cls");
+
 	char* str = new char[MAX_SIZE + 1];
 	bool isEncrypt;
 	enum modes { ecb, ctr, cfb, mac };
