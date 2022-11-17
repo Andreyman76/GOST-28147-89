@@ -204,9 +204,9 @@ DataBlocks<bits32>* Subkeys(DataBlocks<byte>* key, bool isEncrypt)
 // Function f
 bits32 F(bits32 data, bits32 subKey)
 {
-	bits32 result = ((bits64)data + (bits64)subKey) % 4294967296; // Сложение по модулю 2^32
+	bits32 result = ((bits64)data + (bits64)subKey) % 4294967296; // Add modulo 2^32
 	byte arr[8] = {};
-	for (int i = 0; i < 8; i++) // Замены через S-блок
+	for (int i = 0; i < 8; i++) // Substitutions via S-block
 	{
 		arr[i] = S[i][result % 16];
 		result >>= 4;
@@ -220,7 +220,7 @@ bits32 F(bits32 data, bits32 subKey)
 		result |= arr[i];
 	}
 
-	return LeftShift11(result); // Циклический сдвиг влево на 11 бит
+	return LeftShift11(result); // Rotate left by 11 bits
 }
 
 // Blocks of data from hex values
@@ -292,9 +292,9 @@ DataBlocks<bits64>* CTR(DataBlocks<byte>* text, DataBlocks<byte>* key, DataBlock
 	// Split into 32-bit numbers
 	DataBlocks<bits32>* SP32 = Split64To32(SP);
 
-	bits64 left = ((bits64)(*SP32)[0] + 0x1010104) % 4294967295; // Сложение левой части с C1 по модулю 2^32 - 1
-	bits64 right = ((bits64)(*SP32)[1] + 0x1010101) % 4294967296; // Сложение правой части с C2 по модулю 2^32
-	bits64 gamma = (*ECB(GetBytes((left << 32) + right), key, true))[0]; // Полученная гамма шифрования
+	bits64 left = ((bits64)(*SP32)[0] + 0x1010104) % 4294967295; // Add left side to C1 modulo 2^32 - 1
+	bits64 right = ((bits64)(*SP32)[1] + 0x1010101) % 4294967296; // Add the right side to C2 modulo 2^32
+	bits64 gamma = (*ECB(GetBytes((left << 32) + right), key, true))[0]; // Generated cipher gamma
 	DataBlocks<bits64>* blocks;
 	if (isEncrypt) // For encryption
 		blocks = new DataBlocks<bits64>(text);
@@ -321,7 +321,7 @@ DataBlocks<bits64>* CFB(DataBlocks<byte>* text, DataBlocks<byte>* key, DataBlock
 
 	bits64 left = (bits64)(*SP32)[0];
 	bits64 right = (bits64)(*SP32)[1];
-	bits64 gamma = (*ECB(GetBytes((left << 32) + right), key, true))[0]; // Полученная гамма шифрования
+	bits64 gamma = (*ECB(GetBytes((left << 32) + right), key, true))[0]; // Generated cipher gamma
 
 	DataBlocks<bits64>* blocks;
 	if (isEncrypt) // For encryption
